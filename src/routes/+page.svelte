@@ -1,2 +1,22 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+</script>
+
+<div id="title">
+	<div class="text">home.</div>
+</div>
+
+<style>
+	#title {
+		display: flex;
+		font-size: 30px;
+		margin: auto;
+		margin-top: 50px;
+		margin-bottom: 50px;
+		width: 75%;
+	}
+
+	.text {
+		flex-grow: 1;
+		text-align: left;
+	}
+</style>
