@@ -9,15 +9,31 @@
 			iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
 			popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
 		});
-		let marker = L.marker([18.5252, 73.8851], { icon: trashIcon }).addTo(m).bindPopup("I am a marker"); // do this nicer please, ik it's stupid, it's just to show multiple icons show up!
-		let marker1 = L.marker([18.4252, 73.8851], { icon: trashIcon }).addTo(m);
-		let marker2 = L.marker([18.5252, 73.9851], { icon: trashIcon }).addTo(m);
-		let marker3 = L.marker([18.3252, 73.6851], { icon: trashIcon }).addTo(m);
-		let marker4 = L.marker([18.3352, 73.8851], { icon: trashIcon }).addTo(m);
+
+		let markers = [
+			[18.4854, 73.8028],
+			[18.5452, 73.9081],
+			[18.5689, 73.9268],
+			[18.509, 73.8237],
+			[18.4422, 73.8596],
+			[18.5301, 73.8703],
+			[18.4815, 73.9085],
+			[18.5198, 73.8471],
+			[18.5463, 73.7826],
+		];
+		let var1 = 92; // standin variables
+		let var2 = 12;
+		for (let i = 0; i < markers.length; i++) {
+			L.marker(markers[i], { icon: trashIcon })
+				.addTo(m)
+				.bindPopup(
+					`<p>Name: BN#${i} <br />Battery: ${var1}<br/> Filled: ${var2}%<br/></p>`,
+				);
+		}
 	}
 
 	function createMap(container) {
-		let m = L.map(container).setView([18.5252, 73.8851], 11);
+		let m = L.map(container).setView([18.5252, 73.8851], 13);
 		L.tileLayer(
 			"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", // Change to something more consistent to the style
 			{
@@ -41,8 +57,6 @@
 		};
 	}
 </script>
-
-<div id="maptile" use:mapAction />
 
 <svelte:head>
 	<link
