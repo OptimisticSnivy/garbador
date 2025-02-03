@@ -1,8 +1,45 @@
 <script>
-	import img from "$lib/assets/trashmarker.svg";
-	let map;
+	// let markers = [
+	// 	[18.4854, 73.8028],
+	// 	[18.5452, 73.9081],
+	// 	[18.5689, 73.9268],
+	// 	// [18.509, 73.8237],
+	// 	// [18.4422, 73.8596],
+	// 	// [18.5301, 73.8703],
+	// 	// [18.4815, 73.9085],
+	// 	// [18.5198, 73.8471],
+	// 	// [18.5463, 73.7826],
+	// 	// [18.6562, 73.8227],
+	// 	// [18.7221, 73.8063],
+	// ];
 
-	function setMarkers(m) {
+	import img from "$lib/assets/trashmarker.svg";
+	import PocketBase from "pocketbase";
+
+	let map;
+	const pb = new PocketBase("http://127.0.0.1:8090");
+
+	let coords = [];
+	async function getCoords() {
+		const records = await pb.collection("sensors").getFullList({});
+
+		for (let i = 0; i < records.length; i++) {
+			coords[i] = [records[i].lat, records[i].long];
+		}
+		return coords;
+	}
+
+	let batnfill = [];
+	async function getBatnfill() {
+		const records = await pb.collection("sensors").getFullList({});
+
+		for (let i = 0; i < records.length; i++) {
+			batnfill[i] = [records[i].battperc, records[i].fillperc];
+		}
+		return batnfill;
+	}
+
+	async function setMarkers(m) {
 		let trashIcon = L.icon({
 			iconUrl: img,
 			iconSize: [38, 95], // size of the icon
@@ -10,26 +47,16 @@
 			popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
 		});
 
-		let markers = [
-			[18.4854, 73.8028],
-			[18.5452, 73.9081],
-			[18.5689, 73.9268],
-			[18.509, 73.8237],
-			[18.4422, 73.8596],
-			[18.5301, 73.8703],
-			[18.4815, 73.9085],
-			[18.5198, 73.8471],
-			[18.5463, 73.7826],
-			[18.6562, 73.8227],
-			[18.7221, 73.8063],
-		];
+		let markers = await getCoords();
+		let batnfill= await getBatnfill();
+		console.log(batnfill);
 		let var1 = 92; // standin variables
 		let var2 = 12;
 		for (let i = 0; i < markers.length; i++) {
 			L.marker(markers[i], { icon: trashIcon })
 				.addTo(m)
 				.bindPopup(
-					`<p>Name: BN#${i} <br />Battery: ${var1}<br/> Filled: ${var2}%<br/></p>`,
+					`<p>Name: BN#${i} <br />Battery: ${batnfill[i][0]}%<br/> Filled: ${batnfill[i][1]}%<br/></p>`,
 				);
 		}
 	}
@@ -62,7 +89,6 @@
 
 <div></div>
 <div id="maptile" use:mapAction />
-
 
 <svelte:head>
 	<link
