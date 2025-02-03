@@ -20,6 +20,8 @@
 			[18.4815, 73.9085],
 			[18.5198, 73.8471],
 			[18.5463, 73.7826],
+			[18.6562, 73.8227],
+			[18.7221, 73.8063],
 		];
 		let var1 = 92; // standin variables
 		let var2 = 12;
@@ -57,6 +59,10 @@
 		};
 	}
 </script>
+
+<div></div>
+<div id="maptile" use:mapAction />
+
 
 <svelte:head>
 	<link
