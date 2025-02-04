@@ -1,7 +1,7 @@
 #  High priority
-- [] (bug) Map doesn't show up on initial launch, require 1 hard refresh.
+- [] (bug) Map doesn't show up on initial launch, requires 1 hard refresh.
 
-- [] Add recenter button to the mapinterface.
+- [] Toolbar - Add recenter button to the mapinterface.
 
 # Low priority
 - [] Explore more OSM tiles that are consistent w/ the style.

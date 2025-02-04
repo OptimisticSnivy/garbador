@@ -48,10 +48,7 @@
 		});
 
 		let markers = await getCoords();
-		let batnfill= await getBatnfill();
-		console.log(batnfill);
-		let var1 = 92; // standin variables
-		let var2 = 12;
+		let batnfill = await getBatnfill();
 		for (let i = 0; i < markers.length; i++) {
 			L.marker(markers[i], { icon: trashIcon })
 				.addTo(m)
@@ -85,6 +82,7 @@
 			},
 		};
 	}
+
 </script>
 
 <div></div>
