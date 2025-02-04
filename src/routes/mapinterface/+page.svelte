@@ -44,7 +44,7 @@
 		let markers = await getCoords();
 		let batnfill = await getBatnfill();
 		for (let i = 0; i < markers.length; i++) {
-			if (batnfill[i][1] < 50) {
+			if (batnfill[i][1] < 75) {
 				L.marker(markers[i], { icon: trashIcon })
 					.addTo(m)
 					.bindPopup(
