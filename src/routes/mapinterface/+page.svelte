@@ -2,8 +2,8 @@
 	import img from "$lib/assets/greenTrashMarker.svg";
 	import imgred from "$lib/assets/redTrashMarker.svg";
 	import PocketBase from "pocketbase";
-	const pb = new PocketBase("http://127.0.0.1:8090");
 
+	const pb = new PocketBase("http://127.0.0.1:8090");
 	let initialView = [18.5252, 73.8851];
 	let map;
 	let coords = [];
@@ -25,6 +25,7 @@
 		}
 		return batnfill;
 	}
+
 
 	async function setMarkers(m) {
 		let trashIcon = L.icon({
@@ -48,7 +49,7 @@
 				L.marker(markers[i], { icon: trashIcon })
 					.addTo(m)
 					.bindPopup(
-						`<p>Name: BN#${i} <br />Battery: ${batnfill[i][0]}%<br/> Filled: ${batnfill[i][1]}%<br/></p>`,
+						`<p>Name: BN#${i} <br />Battery: ${batnfill[i][0]}%<br/> Filled: ${batnfill[i][1]}%<br/> Coordinates: ${markers[i]}<br/></p>`,
 					);
 			} else {
 				L.marker(markers[i], { icon: trashIconRed })
@@ -113,8 +114,12 @@
 		</svg>
 	</button>
 
-	<!-- Stand-in button, does nothing-->
-	<button title="Refresh">
+	<button
+		on:click={() => {
+			setMarkers(map);
+		}}
+		title="Refresh"
+	>
 		<svg
 			data-slot="icon"
 			aria-hidden="true"
