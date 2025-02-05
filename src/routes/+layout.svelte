@@ -16,8 +16,6 @@
 		crossorigin=""
 	></script>
 </svelte:head>
-
-<Navbar />
 <slot />
 
 <style>

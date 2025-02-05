@@ -2,7 +2,7 @@
 
 - [x] (bug) Map doesn't show up on initial launch, requires 1 hard refresh.(fix, import it in layout.svelte)
 
-- [ ] Toolbar - Add recenter button to the mapinterface.
+- [x] Toolbar - Add recenter button to the mapinterface.
 
 # Low priority
 
