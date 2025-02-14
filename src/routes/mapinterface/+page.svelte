@@ -26,7 +26,6 @@
 		return batnfill;
 	}
 
-
 	async function setMarkers(m) {
 		let trashIcon = L.icon({
 			iconUrl: img,
@@ -42,6 +41,12 @@
 			popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
 		});
 
+		let customOptions = {
+			maxWidth: 400,
+			width: 200,
+			className: "customPopup",
+		};
+
 		let markers = await getCoords();
 		let batnfill = await getBatnfill();
 		for (let i = 0; i < markers.length; i++) {
@@ -50,12 +55,14 @@
 					.addTo(m)
 					.bindPopup(
 						`<p>Name: BN#${i} <br />Battery: ${batnfill[i][0]}%<br/> Filled: ${batnfill[i][1]}%<br/> Coordinates: ${markers[i]}<br/></p>`,
+						customOptions,
 					);
 			} else {
 				L.marker(markers[i], { icon: trashIconRed })
 					.addTo(m)
 					.bindPopup(
-						`<p>Name: BN#${i} <br />Battery: ${batnfill[i][0]}%<br/> Filled: ${batnfill[i][1]}%<br/></p>`,
+						`<p>Name: BN#${i} <br />Battery: ${batnfill[i][0]}%<br/> Filled: ${batnfill[i][1]}%<br/> Coordinates: ${markers[i]}<br/></p>`,
+						customOptions,
 					);
 			}
 		}
@@ -166,9 +173,5 @@
 		width: 50%;
 		padding: 10px 10px;
 		cursor: pointer;
-	}
-
-	.toolbar button:hover {
-		background-color: #0056b3;
 	}
 </style>
