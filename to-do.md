@@ -12,4 +12,4 @@
 
 - [x] Find a better icon for the markers.
 
-- [ ] Fix the fugly css of the marker popups.
+- [x] Fix the fugly css of the marker popups.

@@ -174,4 +174,17 @@
 		padding: 10px 10px;
 		cursor: pointer;
 	}
+
+	/* global allows access for selectors from leaflet.css, for svelte to grab */
+	:global(.customPopup .leaflet-popup-content-wrapper) {    
+		background-color: #12161a;
+		color: paleturquoise;
+		font-family: "IBM Plex Sans", monospace;
+		border-radius: 5px;
+	}
+
+	:global(.customPopup .leaflet-popup-tip) {
+		background-color: #12161a;
+	}
+
 </style>
