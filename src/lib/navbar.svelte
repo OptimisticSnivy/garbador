@@ -8,8 +8,20 @@
 		<a href="/"
 			><Icon icon="material-symbols-light:home" width="28" height="28" /></a
 		>
-
-		<a href="/mapinterface"><Icon icon="material-symbols:map-search-outline" width="28" height="28" /></a>
+		<a href="/mapinterface">
+			<Icon
+				icon="material-symbols:location-on-rounded"
+				width="24"
+				height="24"
+			/>
+		</a>
+		<a href="/routinginterface"
+			><Icon
+				icon="material-symbols:map-search-outline"
+				width="28"
+				height="28"
+			/></a
+		>
 		<a href="/about"><Icon icon="mdi:about" width="28" height="28" /></a>
 	</nav>
 </div>
