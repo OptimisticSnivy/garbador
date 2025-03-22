@@ -3,8 +3,13 @@
 
 	let map;
 
+	const stops = [
+		{ lat: 37.7749, lng: -122.4194, title: "San Francisco" }, // Origin
+		{ lat: 35.3733, lng: -119.0187, title: "Bakersfield" }, // Stop
+		{ lat: 34.0522, lng: -118.2437, title: "Los Angeles" }, // Destination
+	];
 	async function getRoute() {
-		const apiKey = "AIzaSyDAEXDncodFh19E9pCcBeQwykmQ_PVwOHs";
+		const apiKey = "api_key";
 		const url = `https://routes.googleapis.com/directions/v2:computeRoutes`;
 
 		const requestBody = {
@@ -52,6 +57,16 @@
 		routePolyline.setMap(map);
 	}
 
+	function addMarkers() {
+		stops.forEach((stop) => {
+			new google.maps.Marker({
+				position: { lat: stop.lat, lng: stop.lng },
+				map,
+				title: stop.title,
+			});
+		});
+	}
+
 	function initMap() {
 		map = new google.maps.Map(document.getElementById("map"), {
 			zoom: 6,
@@ -59,13 +74,13 @@
 		});
 
 		getRoute();
+		addMarkers();
 	}
-
 
 	onMount(() => {
 		if (!window.google) {
 			const script = document.createElement("script");
-			script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDAEXDncodFh19E9pCcBeQwykmQ_PVwOHs&libraries=geometry&callback=initMap`;
+			script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap`;
 			script.async = true;
 			script.defer = true;
 			document.body.appendChild(script);
