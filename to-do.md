@@ -1,5 +1,7 @@
 # High priority
 
+- [ ] (bug) Path Map disappears after hard refresh!
+
 - [x] (bug) Map doesn't show up on initial launch, requires 1 hard refresh.(fix, import it in layout.svelte)
 
 - [ ] (bug) Toolbar mounts before maptile gets rendered.
