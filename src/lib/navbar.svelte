@@ -15,7 +15,7 @@
 				height="24"
 			/>
 		</a>
-		<a href="/routinginterface"
+		<a href="/pathinterface"
 			><Icon
 				icon="material-symbols:map-search-outline"
 				width="28"
