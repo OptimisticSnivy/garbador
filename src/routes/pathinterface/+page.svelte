@@ -4,39 +4,57 @@
 
 	let map;
 	let stops = [];
+	const pb = new PocketBase("http://127.0.0.1:8090");
 	let API_KEY = import.meta.env.VITE_KEY;
 
 	async function getStops() {
 		const records = await pb.collection("sensors").getFullList({});
 
 		for (let i = 0; i < records.length; i++) {
-			if (records.fillperc > 80) {
-				stops[i] = [records[i].lat, records[i].long];
+			if (records[i].fillperc > 80) {
+				stops.push([records[i].lat, records[i].long]); // Use push()
+				console.log(stops);
 			}
 		}
+		stops.sort((a, b) => a.long - b.long);
 		return stops;
 	}
-
-	// const stops = [
-	// 	{ lat: 37.7749, lng: -122.4194, title: "San Francisco" }, // Origin
-	// 	{ lat: 35.3733, lng: -119.0187, title: "Bakersfield" }, // Stop
-	// 	{ lat: 34.0522, lng: -118.2437, title: "Los Angeles" }, // Destination
-	// ];
 
 	async function getRoute() {
 		const apiKey = API_KEY;
 		const url = `https://routes.googleapis.com/directions/v2:computeRoutes`;
 
+		let stops = await getStops();
+
+		if (stops.length < 2) {
+			console.error("Not enough stops to create a route.");
+			return;
+		}
+
+		const origin = {
+			location: {
+				latLng: { latitude: stops[0][0], longitude: stops[0][1] },
+			},
+		};
+		const destination = {
+			location: {
+				latLng: {
+					latitude: stops[stops.length - 1][0],
+					longitude: stops[stops.length - 1][1],
+				},
+			},
+		};
+
+		const intermediates = stops.slice(1, stops.length - 1).map((stop) => {
+			return {
+				location: { latLng: { latitude: stop[0], longitude: stop[1] } },
+			};
+		});
+
 		const requestBody = {
-			origin: {
-				location: { latLng: { latitude: 37.7749, longitude: -122.4194 } },
-			}, // SF
-			destination: {
-				location: { latLng: { latitude: 34.0522, longitude: -118.2437 } },
-			}, // LA
-			intermediates: [
-				{ location: { latLng: { latitude: 35.3733, longitude: -119.0187 } } }, // Bakersfield
-			],
+			origin,
+			destination,
+			intermediates, // Use dynamically generated intermediates
 			travelMode: "DRIVE",
 			routingPreference: "TRAFFIC_AWARE",
 		};
@@ -50,7 +68,6 @@
 			},
 			body: JSON.stringify(requestBody),
 		});
-
 		const data = await response.json();
 		if (data.routes && data.routes.length > 0) {
 			drawRoute(data.routes[0].polyline.encodedPolyline);
@@ -72,28 +89,13 @@
 		routePolyline.setMap(map);
 	}
 
-	async function addMarkers() {
-		let stops = await getStops;
-
-		if (stops.length > 1) {
-			stops.forEach((stop) => {
-				new google.maps.Marker({
-					position: { lat: stop.lat, lng: stop.lng },
-					map,
-					title: stop.title,
-				});
-			});
-		}
-	}
-
 	function initMap() {
 		map = new google.maps.Map(document.getElementById("map"), {
-			zoom: 6,
-			center: { lat: 36.5, lng: -120.5 }, // Center between SF and LA
+			zoom: 12,
+			center: { lat: 18.5204, lng: 73.8567 }, // Pune coordinates
 		});
 
 		getRoute();
-		addMarkers();
 	}
 
 	onMount(() => {
