@@ -3,10 +3,11 @@
 	import imgred from "$lib/assets/redTrashMarker.svg";
 	import PocketBase from "pocketbase";
 
-	const pb = new PocketBase("http://127.0.0.1:8090");
-	let initialView = [18.5252, 73.8851];
 	let map;
 	let coords = [];
+	let initialView = [18.5252, 73.8851];
+	const pb = new PocketBase("http://127.0.0.1:8090");
+
 	async function getCoords() {
 		const records = await pb.collection("sensors").getFullList({});
 

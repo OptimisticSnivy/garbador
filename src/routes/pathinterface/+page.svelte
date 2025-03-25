@@ -1,14 +1,28 @@
 <script>
 	import { onMount } from "svelte";
+	import PocketBase from "pocketbase";
 
 	let map;
+	let stops = [];
 	let API_KEY = import.meta.env.VITE_KEY;
 
-	const stops = [
-		{ lat: 37.7749, lng: -122.4194, title: "San Francisco" }, // Origin
-		{ lat: 35.3733, lng: -119.0187, title: "Bakersfield" }, // Stop
-		{ lat: 34.0522, lng: -118.2437, title: "Los Angeles" }, // Destination
-	];
+	async function getStops() {
+		const records = await pb.collection("sensors").getFullList({});
+
+		for (let i = 0; i < records.length; i++) {
+			if (records.fillperc > 80) {
+				stops[i] = [records[i].lat, records[i].long];
+			}
+		}
+		return stops;
+	}
+
+	// const stops = [
+	// 	{ lat: 37.7749, lng: -122.4194, title: "San Francisco" }, // Origin
+	// 	{ lat: 35.3733, lng: -119.0187, title: "Bakersfield" }, // Stop
+	// 	{ lat: 34.0522, lng: -118.2437, title: "Los Angeles" }, // Destination
+	// ];
+
 	async function getRoute() {
 		const apiKey = API_KEY;
 		const url = `https://routes.googleapis.com/directions/v2:computeRoutes`;
@@ -58,14 +72,18 @@
 		routePolyline.setMap(map);
 	}
 
-	function addMarkers() {
-		stops.forEach((stop) => {
-			new google.maps.Marker({
-				position: { lat: stop.lat, lng: stop.lng },
-				map,
-				title: stop.title,
+	async function addMarkers() {
+		let stops = await getStops;
+
+		if (stops.length > 1) {
+			stops.forEach((stop) => {
+				new google.maps.Marker({
+					position: { lat: stop.lat, lng: stop.lng },
+					map,
+					title: stop.title,
+				});
 			});
-		});
+		}
 	}
 
 	function initMap() {
@@ -98,7 +116,7 @@
 
 <style>
 	#map {
-		height: 1000px;
+		height: 782px;
 		width: 100%;
 	}
 
