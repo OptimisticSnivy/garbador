@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 
 	let map;
+	let API_KEY = import.meta.env.VITE_KEY;
 
 	const stops = [
 		{ lat: 37.7749, lng: -122.4194, title: "San Francisco" }, // Origin
@@ -9,7 +10,7 @@
 		{ lat: 34.0522, lng: -118.2437, title: "Los Angeles" }, // Destination
 	];
 	async function getRoute() {
-		const apiKey = "api_key";
+		const apiKey = API_KEY;
 		const url = `https://routes.googleapis.com/directions/v2:computeRoutes`;
 
 		const requestBody = {
@@ -80,7 +81,7 @@
 	onMount(() => {
 		if (!window.google) {
 			const script = document.createElement("script");
-			script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap`;
+			script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=geometry&callback=initMap`;
 			script.async = true;
 			script.defer = true;
 			document.body.appendChild(script);
@@ -97,7 +98,7 @@
 
 <style>
 	#map {
-		height: 500px;
+		height: 1000px;
 		width: 100%;
 	}
 
