@@ -1,4 +1,4 @@
-<script>
+<script context="module">
 	import img from "$lib/assets/greenTrashMarker.svg";
 	import imgred from "$lib/assets/redTrashMarker.svg";
 	import PocketBase from "pocketbase";
@@ -27,7 +27,7 @@
 		return batnfill;
 	}
 
-	async function setMarkers(m) {
+	export async function setMarkers(m) {
 		let trashIcon = L.icon({
 			iconUrl: img,
 			iconSize: [38, 95], // size of the icon

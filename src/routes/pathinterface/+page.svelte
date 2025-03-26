@@ -1,118 +1,75 @@
 <script>
 	import { onMount } from "svelte";
+	import { setMarkers } from "../mapinterface/+page.svelte";
 	import PocketBase from "pocketbase";
+	import polyline from "@mapbox/polyline"; // For decoding Mapbox polylines
 
 	let map;
 	let stops = [];
 	const pb = new PocketBase("http://127.0.0.1:8090");
-	let API_KEY = import.meta.env.VITE_KEY;
+	let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
 
 	async function getStops() {
 		const records = await pb.collection("sensors").getFullList({});
+		stops = records
+			.filter((record) => record.fillperc > 80) // Only high-priority stops
+			.map((record) => [record.long, record.lat]); // Map to [lng, lat]
 
-		for (let i = 0; i < records.length; i++) {
-			if (records[i].fillperc > 80) {
-				stops.push([records[i].lat, records[i].long]); // Use push()
-				console.log(stops);
-			}
-		}
-		stops.sort((a, b) => a.long - b.long);
+		stops.sort((a, b) => a[0] - b[0]); // Sort by longitude (west to east)
 		return stops;
 	}
 
 	async function getRoute() {
-		const apiKey = API_KEY;
-		const url = `https://routes.googleapis.com/directions/v2:computeRoutes`;
-
 		let stops = await getStops();
-
 		if (stops.length < 2) {
 			console.error("Not enough stops to create a route.");
 			return;
 		}
 
-		const origin = {
-			location: {
-				latLng: { latitude: stops[0][0], longitude: stops[0][1] },
-			},
-		};
-		const destination = {
-			location: {
-				latLng: {
-					latitude: stops[stops.length - 1][0],
-					longitude: stops[stops.length - 1][1],
-				},
-			},
-		};
+		// Format stops for Mapbox API (lng,lat format)
+		const waypoints = stops.map((coord) => coord.join(",")).join(";");
 
-		const intermediates = stops.slice(1, stops.length - 1).map((stop) => {
-			return {
-				location: { latLng: { latitude: stop[0], longitude: stop[1] } },
-			};
-		});
+		const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?geometries=polyline&access_token=${API_KEY}`;
 
-		const requestBody = {
-			origin,
-			destination,
-			intermediates, // Use dynamically generated intermediates
-			travelMode: "DRIVE",
-			routingPreference: "TRAFFIC_AWARE",
-		};
-
-		const response = await fetch(url, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-Goog-Api-Key": apiKey,
-				"X-Goog-FieldMask": "routes.polyline",
-			},
-			body: JSON.stringify(requestBody),
-		});
+		const response = await fetch(url);
 		const data = await response.json();
+
 		if (data.routes && data.routes.length > 0) {
-			drawRoute(data.routes[0].polyline.encodedPolyline);
+			const decodedPath = polyline.decode(data.routes[0].geometry); // Decode Mapbox polyline
+			const leafletPath = decodedPath.map((coord) => [coord[0], coord[1]]); // Convert to Leaflet format
+			drawRoute(leafletPath);
 		} else {
 			console.error("No route found", data);
 		}
 	}
 
-	function drawRoute(encodedPolyline) {
-		const decodedPath =
-			google.maps.geometry.encoding.decodePath(encodedPolyline);
-		const routePolyline = new google.maps.Polyline({
-			path: decodedPath,
-			geodesic: true,
-			strokeColor: "#FF0000",
-			strokeOpacity: 1.0,
-			strokeWeight: 4,
-		});
-		routePolyline.setMap(map);
+	function drawRoute(routePath) {
+		L.polyline(routePath, { color: "blue", weight: 5 }).addTo(map);
 	}
 
 	function initMap() {
-		map = new google.maps.Map(document.getElementById("map"), {
-			zoom: 12,
-			center: { lat: 18.5204, lng: 73.8567 }, // Pune coordinates
-		});
+		map = L.map("map").setView([18.5204, 73.8567], 12); // Center on Pune
+		L.tileLayer(
+			"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", // Change to something more consistent to the style
+			{
+				attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
+          &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
+				subdomains: "abcd",
+				maxZoom: 18,
+			},
+		).addTo(map);
 
+		setMarkers(map);
 		getRoute();
 	}
 
 	onMount(() => {
-		if (!window.google) {
-			const script = document.createElement("script");
-			script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=geometry&callback=initMap`;
-			script.async = true;
-			script.defer = true;
-			document.body.appendChild(script);
-		} else {
-			initMap();
-		}
+		initMap();
 	});
 </script>
 
 <div id="title">
-	<div id="text">routing.</div>
+	<div id="text">Routing with Mapbox & Leaflet</div>
 </div>
 <div id="map"></div>
 
