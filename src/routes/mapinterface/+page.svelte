@@ -30,14 +30,14 @@
 
 	export async function setMarkers(m) {
 		let trashIcon = L.icon({
-			iconUrl: img1,
+			iconUrl: img,
 			iconSize: [38, 95], // size of the icon
 			iconAnchor: [1, 50], // point of the icon which will correspond to marker's location
 			popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
 		});
 
 		let trashIconRed = L.icon({
-			iconUrl: img1,
+			iconUrl: imgred,
 			iconSize: [38, 95], // size of the icon
 			iconAnchor: [21, 60], // point of the icon which will correspond to marker's location
 			popupAnchor: [-3, -46], // point from which the popup should open relative to the iconAnchor
