@@ -7,8 +7,6 @@
 	let map;
 	let coords = [];
 	let initialView = [18.5252, 73.8851];
-	let API_KEY = import.meta.env.VITE_MAPBOX_KEY; // Secure further please!
-
 	const pb = new PocketBase("http://127.0.0.1:8090");
 
 	async function getCoords() {
@@ -75,11 +73,12 @@
 	function createMap(container) {
 		let m = L.map(container).setView(initialView, 13);
 		L.tileLayer(
-			`https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=${API_KEY}`,
+			"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", // Change to something more consistent to the style
 			{
-				tileSize: 512, // Required to match Mapbox's tiling scheme
-				zoomOffset: -1, // Adjust zoom levels for proper rendering
-				attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+				attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
+          &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
+				subdomains: "abcd",
+				maxZoom: 18,
 			},
 		).addTo(m);
 
@@ -129,7 +128,6 @@
 			setMarkers(map);
 		}}
 		title="Refresh"
-		mapi
 	>
 		<svg
 			data-slot="icon"
@@ -180,7 +178,7 @@
 	}
 
 	/* global allows access for selectors from leaflet.css, for svelte to grab */
-	:global(.customPopup .leaflet-popup-content-wrapper) {
+	:global(.customPopup .leaflet-popup-content-wrapper) {    
 		background-color: #12161a;
 		color: paleturquoise;
 		font-family: "IBM Plex Sans", monospace;
@@ -190,4 +188,5 @@
 	:global(.customPopup .leaflet-popup-tip) {
 		background-color: #12161a;
 	}
+
 </style>
