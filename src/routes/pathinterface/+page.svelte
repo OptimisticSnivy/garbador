@@ -69,7 +69,7 @@
 </script>
 
 <div id="title">
-	<div id="text">Routing with Mapbox & Leaflet</div>
+	<div id="text">routing.</div>
 </div>
 <div id="map"></div>
 

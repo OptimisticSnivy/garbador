@@ -1,5 +1,6 @@
 <script context="module">
 	import img from "$lib/assets/greenTrashMarker.svg";
+	import img1 from "$lib/assets/location-dot-solid.svg";
 	import imgred from "$lib/assets/redTrashMarker.svg";
 	import PocketBase from "pocketbase";
 
@@ -29,17 +30,17 @@
 
 	export async function setMarkers(m) {
 		let trashIcon = L.icon({
-			iconUrl: img,
+			iconUrl: img1,
 			iconSize: [38, 95], // size of the icon
-			iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+			iconAnchor: [1, 50], // point of the icon which will correspond to marker's location
 			popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
 		});
 
 		let trashIconRed = L.icon({
-			iconUrl: imgred,
+			iconUrl: img1,
 			iconSize: [38, 95], // size of the icon
-			iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-			popupAnchor: [0, 0], // point from which the popup should open relative to the iconAnchor
+			iconAnchor: [21, 60], // point of the icon which will correspond to marker's location
+			popupAnchor: [-3, -46], // point from which the popup should open relative to the iconAnchor
 		});
 
 		let customOptions = {
