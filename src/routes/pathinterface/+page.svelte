@@ -29,7 +29,7 @@
 		// Format stops for Mapbox API (lng,lat format)
 		const waypoints = stops.map((coord) => coord.join(",")).join(";");
 
-		const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?geometries=polyline&access_token=${API_KEY}`;
+		const url = `https://api.mapbox.com/directions/v5/mapbox/cycling/${waypoints}?geometries=polyline&access_token=${API_KEY}`;
 
 		const response = await fetch(url);
 		const data = await response.json();
