@@ -44,7 +44,7 @@
 	}
 
 	function drawRoute(routePath) {
-		L.polyline(routePath, { color: "blue", weight: 5 }).addTo(map);
+		L.polyline(routePath, { color: "#12161a", weight: 2 }).addTo(map);
 	}
 
 	function initMap() {
