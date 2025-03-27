@@ -7,6 +7,7 @@
 	let map;
 	let coords = [];
 	let initialView = [18.5252, 73.8851];
+	let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
 	const pb = new PocketBase("http://127.0.0.1:8090");
 
 	async function getCoords() {
@@ -32,8 +33,8 @@
 		let trashIcon = L.icon({
 			iconUrl: img,
 			iconSize: [38, 95], // size of the icon
-			iconAnchor: [1, 50], // point of the icon which will correspond to marker's location
-			popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+			iconAnchor: [21, 60], // point of the icon which will correspond to marker's location
+			popupAnchor: [-3, -46], // point from which the popup should open relative to the iconAnchor
 		});
 
 		let trashIconRed = L.icon({
@@ -73,12 +74,12 @@
 	function createMap(container) {
 		let m = L.map(container).setView(initialView, 13);
 		L.tileLayer(
-			"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", // Change to something more consistent to the style
+			`https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/{z}/{x}/{y}?access_token=${API_KEY}`,
 			{
-				attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
-          &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
-				subdomains: "abcd",
-				maxZoom: 18,
+				tileSize: 512,
+				zoomOffset: -1,
+				attribution:
+					'&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>',
 			},
 		).addTo(m);
 
@@ -178,7 +179,7 @@
 	}
 
 	/* global allows access for selectors from leaflet.css, for svelte to grab */
-	:global(.customPopup .leaflet-popup-content-wrapper) {    
+	:global(.customPopup .leaflet-popup-content-wrapper) {
 		background-color: #12161a;
 		color: paleturquoise;
 		font-family: "IBM Plex Sans", monospace;
@@ -188,5 +189,4 @@
 	:global(.customPopup .leaflet-popup-tip) {
 		background-color: #12161a;
 	}
-
 </style>
