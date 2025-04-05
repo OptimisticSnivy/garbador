@@ -159,13 +159,13 @@
 
 	.toolbar {
 		position: absolute;
-		top: 100px; /* Adjust position as needed */
-		right: 20px; /* Adjust position as needed */
-		background-color: rgba(255, 255, 255, 0); /* Transparent background */
+		top: 110px; 
+		right: 20px; 
+		background-color: rgba(255, 255, 255, 0); 
 		padding: 10px;
 		/* border-radius: 8px; */
-		box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2); /* Slight shadow for better visibility */
-		z-index: 1000; /* Make sure it's on top */
+		box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2); 
+		z-index: 1000;
 	}
 
 	button {
