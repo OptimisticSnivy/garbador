@@ -1,75 +1,31 @@
 <script>
-	import { onMount } from "svelte";
-	import { setMarkers } from "../mapinterface/+page.svelte";
-	import PocketBase from "pocketbase";
-	import polyline from "@mapbox/polyline"; // For decoding Mapbox polylines
+import { onMount, onDestroy } from 'svelte';
+import pkg from 'mapbox-gl';
+const {Map} = pkg;
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-	let map;
-	let stops = [];
-	const pb = new PocketBase("http://127.0.0.1:8090");
-	let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
+let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
+let map;
+let mapContainer;
+let lng, lat, zoom;
 
-	async function getStops() {
-		const records = await pb.collection("sensors").getFullList({});
-		stops = records
-			.filter((record) => record.fillperc > 75) // Only high-priority stops
-			.map((record) => [record.long, record.lat]); // Map to [lng, lat]
+lat = 18.5252;
+lng = 73.8851
+zoom = 12;
 
-		stops.sort((a, b) => a[0] - b[0]); // Sort by longitude (west to east)
-		return stops;
-	}
+let initialState = { lng, lat, zoom }; 
 
-	async function getRoute() {
-		let stops = await getStops();
-		if (stops.length < 2) {
-			console.error("Not enough stops to create a route.");
-			return;
-		}
-
-		// Format stops for Mapbox API (lng,lat format)
-		const waypoints = stops.map((coord) => coord.join(",")).join(";");
-
-		const url = `https://api.mapbox.com/directions/v5/mapbox/cycling/${waypoints}?geometries=polyline&access_token=${API_KEY}`;
-
-		const response = await fetch(url);
-		const data = await response.json();
-
-		if (data.routes && data.routes.length > 0) {
-			const decodedPath = polyline.decode(data.routes[0].geometry); // Decode Mapbox polyline
-			const leafletPath = decodedPath.map((coord) => [coord[0], coord[1]]); // Convert to Leaflet format
-			drawRoute(leafletPath);
-		} else {
-			console.error("No route found", data);
-		}
-	}
-
-	function drawRoute(routePath) {
-		// L.polyline(routePath, { color: "#12161a", weight: 2 }).addTo(map);
-		L.polyline(routePath, { color: "paleturquoise", weight: 1 }).addTo(map);
-	}
-
-	function initMap() {
-		map = L.map("map").setView([18.5204, 73.8567], 13);
-		L.tileLayer(
-			`https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/{z}/{x}/{y}?access_token=${API_KEY}`,
-			{
-				tileSize: 512,
-				zoomOffset: -1,
-				attribution:
-					'&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>',
-			},
-		).addTo(map);
-
-		setMarkers(map);
-		getRoute();
-	}
-
-	onMount(() => {
-		initMap();
+onMount(() => {
+	map = new Map({
+		container: mapContainer,
+		accessToken: API_KEY,
+		center: [initialState.lng, initialState.lat],
+		zoom: initialState.zoom
 	});
+});
 </script>
 
-<div id="map"></div>
+<div class="map" bind:this={mapContainer} /> 
 <div class="toolbar">
 	<button
 		on:click={() => {
@@ -122,7 +78,7 @@
 </div>
 
 <style>
-	#map {
+	.map {
 		height: 782px;
 		width: 100%;
 		margin-top: 30px;
@@ -144,13 +100,13 @@
 
 	.toolbar {
 		position: absolute;
-		top: 110px; /* Adjust position as needed */
-		right: 20px; /* Adjust position as needed */
-		background-color: rgba(255, 255, 255, 0); /* Transparent background */
+		top: 110px;
+		right: 20px; 
+		background-color: rgba(255, 255, 255, 0); 
 		padding: 10px;
 		/* border-radius: 8px; */
-		box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2); /* Slight shadow for better visibility */
-		z-index: 1000; /* Make sure it's on top */
+		box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2); 
+		z-index: 1000;
 	}
 
 	button {
