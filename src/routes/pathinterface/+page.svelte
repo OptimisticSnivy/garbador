@@ -1,35 +1,135 @@
 <script>
-import { onMount, onDestroy } from 'svelte';
-import pkg from 'mapbox-gl';
-const {Map} = pkg;
-import 'mapbox-gl/dist/mapbox-gl.css';
+	import { onMount, onDestroy } from "svelte";
+	import pkg from "mapbox-gl";
+	const { Map } = pkg;
+	import "mapbox-gl/dist/mapbox-gl.css";
 
-let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
-let map;
-let mapContainer;
-let lng, lat, zoom;
+	let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
+	let map;
+	let mapContainer;
+	let lng, lat, zoom;
 
-lat = 18.5252;
-lng = 73.8851
-zoom = 12;
+	lat = 18.525;
+	lng = 73.885;
+	zoom = 12;
 
-let initialState = { lng, lat, zoom }; 
+	let start = [73.8553, 18.5196]; // getRoute accepts reversed coords, ie, [long,lat] & not the default [lat,long]
+	let initialState = { lng, lat, zoom };
 
-onMount(() => {
-	map = new Map({
-		container: mapContainer,
-		accessToken: API_KEY,
-		center: [initialState.lng, initialState.lat],
-		zoom: initialState.zoom
+	// create a function to make a directions request and update the destination
+	async function getRoute(end) {
+		// make a directions request using cycling profile
+		const query = await fetch(
+			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${API_KEY}`,
+		);
+		const json = await query.json();
+		console.log(json);
+		const data = json.routes[0];
+		const route = data.geometry;
+		const geojson = {
+			type: "Feature",
+			properties: {},
+			geometry: data.geometry,
+		};
+
+		if (map.getSource("route")) {
+			// if the route already exists on the map, reset it using setData
+			map.getSource("route").setData(geojson);
+		}
+
+		// otherwise, add a new layer using this data
+		else {
+			map.addLayer({
+				id: "route",
+				type: "line",
+				source: {
+					type: "geojson",
+					data: geojson,
+				},
+				layout: {
+					"line-join": "round",
+					"line-cap": "round",
+				},
+				paint: {
+					"line-color": "#3887be",
+					"line-width": 5,
+					"line-opacity": 0.75,
+				},
+			});
+		}
+	}
+
+	onMount(() => {
+		map = new Map({
+			container: mapContainer,
+			accessToken: API_KEY,
+			style: "mapbox://styles/mapbox/dark-v11",
+			center: [initialState.lng, initialState.lat],
+			zoom: initialState.zoom,
+		});
+		map.on("load", () => {
+			const defaultEnd = [73.8419, 18.5165];
+			map.addLayer({
+				id: "origin-circle",
+				type: "circle",
+				source: {
+					type: "geojson",
+					data: {
+						type: "FeatureCollection",
+						features: [
+							{
+								type: "Feature",
+								properties: {},
+								geometry: {
+									type: "Point",
+									coordinates: start,
+								},
+							},
+						],
+					},
+				},
+				paint: {
+					"circle-radius": 10,
+					"circle-color": "#4ce05b",
+				},
+			});
+
+			// add destination circle to the map
+			map.addLayer({
+				id: "destination-circle",
+				type: "circle",
+				source: {
+					type: "geojson",
+					data: {
+						type: "FeatureCollection",
+						features: [
+							{
+								type: "Feature",
+								properties: {},
+								geometry: {
+									type: "Point",
+									coordinates: defaultEnd,
+								},
+							},
+						],
+					},
+				},
+				paint: {
+					"circle-radius": 10,
+					"circle-color": "#f30",
+				},
+			});
+			console.log("init route");
+			getRoute(defaultEnd);
+		});
 	});
-});
 </script>
 
-<div class="map" bind:this={mapContainer} /> 
+<div class="map" bind:this={mapContainer} />
 <div class="toolbar">
 	<button
 		on:click={() => {
-			map.setView([18.5204, 73.8567], 13)
+			map.setView([18.5204, 73.8567], 13);
 		}}
 		title="Reset-View"
 	>
@@ -52,11 +152,7 @@ onMount(() => {
 		</svg>
 	</button>
 
-	<button
-		on:click={() => {
-		}}
-		title="Refresh"
-	>
+	<button on:click={() => {}} title="Refresh">
 		<svg
 			data-slot="icon"
 			aria-hidden="true"
@@ -101,11 +197,11 @@ onMount(() => {
 	.toolbar {
 		position: absolute;
 		top: 110px;
-		right: 20px; 
-		background-color: rgba(255, 255, 255, 0); 
+		right: 20px;
+		background-color: rgba(255, 255, 255, 0);
 		padding: 10px;
 		/* border-radius: 8px; */
-		box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2); 
+		box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2);
 		z-index: 1000;
 	}
 
@@ -118,5 +214,4 @@ onMount(() => {
 		padding: 10px 10px;
 		cursor: pointer;
 	}
-
 </style>
