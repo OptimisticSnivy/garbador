@@ -1,13 +1,15 @@
 <script>
 	import { onMount, onDestroy } from "svelte";
+	import PocketBase from "pocketbase";
 	import pkg from "mapbox-gl";
 	const { Map } = pkg;
 	import "mapbox-gl/dist/mapbox-gl.css";
 
-	let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
 	let map;
 	let mapContainer;
 	let lng, lat, zoom;
+	const pb = new PocketBase("http://127.0.0.1:8090");
+	let API_KEY = import.meta.env.VITE_MAPBOX_KEY;
 
 	lat = 18.525;
 	lng = 73.885;
@@ -15,15 +17,25 @@
 
 	let start = [73.8553, 18.5196]; // getRoute accepts reversed coords, ie, [long,lat] & not the default [lat,long]
 	let initialState = { lng, lat, zoom };
+	let stops = []
 
-	// create a function to make a directions request and update the destination
+	async function getStops() {
+		const records = await pb.collection("sensors").getFullList({});
+		stops = records
+			.filter((record) => record.fillperc > 75) // Only high-priority stops
+			.map((record) => [record.long, record.lat]); // Map to [lng, lat]
+
+		stops.sort((a, b) => a[0] - b[0]); // Sort by longitude (west to east)
+		return stops;
+	}
+
 	async function getRoute(end) {
-		// make a directions request using cycling profile
+		let stops = await getStops();
+		console.log(stops)
 		const query = await fetch(
-			`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${API_KEY}`,
+			`https://api.mapbox.com/directions/v5/mapbox/driving/${stops[0][0]},${stops[0][1]};${stops[1][0]},${stops[1][1]}?steps=true&geometries=geojson&access_token=${API_KEY}`,
 		);
 		const json = await query.json();
-		console.log(json);
 		const data = json.routes[0];
 		const route = data.geometry;
 		const geojson = {
@@ -119,7 +131,6 @@
 					"circle-color": "#f30",
 				},
 			});
-			console.log("init route");
 			getRoute(defaultEnd);
 		});
 	});
