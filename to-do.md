@@ -1,5 +1,7 @@
 # High priority
 
+- [ ] (UI Improvement) Center Path Interface around routed bins.
+
 - [x] (bug) Map doesn't show up on initial launch, requires 1 hard refresh.(fix, import it in layout.svelte)
 
 - [ ] (bug) Toolbar mounts before maptile gets rendered.

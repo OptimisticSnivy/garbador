@@ -73,7 +73,7 @@
 <div class="toolbar">
 	<button
 		on:click={() => {
-			map.setView([18.5204, 73.8567], 13)
+			map.setView([18.5204, 73.8567], 13);
 		}}
 		title="Reset-View"
 	>
@@ -98,6 +98,8 @@
 
 	<button
 		on:click={() => {
+			getRoute();
+			setMarkers(map);
 		}}
 		title="Refresh"
 	>
@@ -162,5 +164,4 @@
 		padding: 10px 10px;
 		cursor: pointer;
 	}
-
 </style>
