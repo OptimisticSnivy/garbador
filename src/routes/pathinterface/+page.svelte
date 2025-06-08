@@ -74,6 +74,7 @@
 	<button
 		on:click={() => {
 			map.setView([18.5204, 73.8567], 13);
+			getStops();
 		}}
 		title="Reset-View"
 	>
